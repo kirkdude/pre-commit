@@ -1,0 +1,3 @@
+auto-smart-commit
+checkov
+flake8
