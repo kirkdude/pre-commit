@@ -35,6 +35,7 @@ repos:
       - id: check-shebang-scripts-are-executable # ensures that (non-binary) files with a shebang are executable.
       - id: check-json                           # checks for valid json
       - id: pretty-format-json                   # sets a standard for formatting json files.
+        args: [--autofix]
       - id: check-merge-conflict                 # checks for files that contain merge conflict strings.
       - id: check-symlinks                       # checks for symlinks which do not point to anything.
       - id: check-toml                           # checks toml files for parseable syntax.
@@ -163,4 +164,4 @@ repos:
     rev: 0.2.2
     hooks:
       - id: checkmake
-      - id: checkmake-system
+        args: [--config=checkmake.ini]
