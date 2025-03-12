@@ -80,8 +80,8 @@ if [ -x "$(command -v apt)" ]; then
     fi
 
     echo "Installing Python packages..."
-    pip3 install checkov || install_error "checkov"
-    pip3 install pre-commit || install_error "pre-commit"
+    pip3 install --ignore-installed checkov || install_error "checkov"
+    pip3 install --ignore-installed pre-commit || install_error "pre-commit"
 
     echo "Verifying pre-commit installation..."
     pre-commit --version
@@ -117,7 +117,10 @@ fi
 # Check if requirements.txt exists
 if [ -f "requirements.txt" ]; then
     echo "Installing Python requirements..."
-    pip3 install -r requirements.txt || install_error "python requirements"
+    pip3 install --ignore-installed -r requirements.txt || install_error "python requirements"
+elif [ -f "scripts/requirements.txt" ]; then
+    echo "Installing Python requirements from scripts/requirements.txt..."
+    pip3 install --ignore-installed -r scripts/requirements.txt || install_error "python requirements"
 else
     echo "Warning: requirements.txt not found"
 fi

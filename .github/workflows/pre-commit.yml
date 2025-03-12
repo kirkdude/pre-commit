@@ -1,0 +1,48 @@
+name: Pre-commit Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Make setup script executable
+        run: chmod +x scripts/setup_run_pre-commit_linux.sh
+
+      - name: Install dependencies and run pre-commit checks
+        run: |
+          # Install npm for markdownlint-cli
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
+          sudo npm install -g markdownlint-cli
+
+          # Install Python dependencies in user mode first
+          pip install --user -r scripts/requirements.txt || {
+            echo "Some pip packages failed to install, continuing anyway..."
+          }
+
+          # Modify script to not prompt for SSH key generation
+          sed -i 's/read -r GENERATE_KEY/GENERATE_KEY="n"/g' scripts/setup_run_pre-commit_linux.sh
+
+          # Skip Python package installation in the script for CI
+          sed -i 's/pip3 install --ignore-installed checkov/echo "Skipping checkov installation in CI"/g' scripts/setup_run_pre-commit_linux.sh
+          sed -i 's/pip3 install --ignore-installed pre-commit/echo "Skipping pre-commit installation in CI"/g' scripts/setup_run_pre-commit_linux.sh
+          sed -i 's/pip3 install --ignore-installed -r requirements.txt/echo "Skipping requirements installation in CI"/g' scripts/setup_run_pre-commit_linux.sh
+          sed -i 's/pip3 install --ignore-installed -r scripts\/requirements.txt/echo "Skipping requirements installation in CI"/g' scripts/setup_run_pre-commit_linux.sh
+
+          # Run with sudo as the script needs root privileges (but skip Python package installation)
+          sudo DEBIAN_FRONTEND=noninteractive ./scripts/setup_run_pre-commit_linux.sh
+
+          # Run pre-commit on all files (the script runs it, but let's be explicit)
+          pre-commit run --all-files
