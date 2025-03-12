@@ -33,7 +33,6 @@ repos:
       - id: check-executables-have-shebangs      # ensures that (non-binary) executables have a shebang.
       - id: check-json                           # checks json files for parseable syntax.
       - id: check-shebang-scripts-are-executable # ensures that (non-binary) files with a shebang are executable.
-      - id: check-json                           # checks for valid json
       - id: pretty-format-json                   # sets a standard for formatting json files.
         args: [--autofix]
       - id: check-merge-conflict                 # checks for files that contain merge conflict strings.
@@ -110,7 +109,8 @@ repos:
     rev: v1.29.1
     hooks:
       - id: cfn-python-lint
-        files: path/to/cfn/dir/.*\.(json|yml|yaml)$
+        files: .*\.(json|yml|yaml)$
+        exclude: ^(\.pre-commit-config\.yaml|package\.json)$
 
   # Local Testing
   # Runs tests using pytest.
