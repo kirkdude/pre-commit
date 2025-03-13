@@ -27,6 +27,11 @@ jobs:
           sudo apt-get install -y nodejs npm
           sudo npm install -g markdownlint-cli@0.44.0
 
+          # Copy .markdownlint.yaml to the working directory for use by markdownlint
+          echo "Copying .markdownlint.yaml to ensure markdownlint uses the correct configuration"
+          cp .markdownlint.yaml ~/.markdownlint.yaml
+          cp .markdownlint.yaml "${GITHUB_WORKSPACE}/.markdownlint.yaml"
+
           # Install Python dependencies in user mode first
           pip install --user -r scripts/requirements.txt || {
             echo "Some pip packages failed to install, continuing anyway..."
