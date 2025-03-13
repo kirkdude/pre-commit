@@ -1,5 +1,8 @@
 # Pre-commit
 
+[![Build Status](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml/badge.svg)
+](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml)
+
 This repository contains pre-commit configuration that uses a curated set of
 linters and security checkers to enhance the quality and security of your
 codebase. By integrating these tools into your development workflow, you can
@@ -53,9 +56,10 @@ For more information on configuring pre-commit, please refer to the [official do
 
 ## Why This Repository?
 
-After having many outdated pre-commit configurations in multiple repositories, this project aims to maintain
-a single, up-to-date configuration that can be copied to other projects. This repository serves as the
-"source of truth" for pre-commit configurations and is regularly updated with the latest hooks and best practices.
+After having many outdated pre-commit configurations in multiple repositories, this project
+aims to maintain a single, up-to-date configuration that can be copied to other projects.
+This repository serves as the "source of truth" for pre-commit configurations and is
+regularly updated with the latest hooks and best practices.
 
 ## Included Hooks
 
@@ -66,7 +70,8 @@ This pre-commit configuration includes several categories of hooks:
 3. **General Pre-commit Checks** - Various file format, syntax, and security checks
 4. **Python Security Linting** - Uses Bandit to find security issues in Python code
 5. **Python Linting** - Uses Flake8 to enforce Python style conventions
-6. **Terraform Linting and Validation** - Several tools for Terraform files (fmt, docs, validate, tflint, checkov, infracost)
+6. **Terraform Linting and Validation** - Several tools for Terraform files
+   (fmt, docs, validate, tflint, checkov, infracost)
 7. **Python Dependency Management** - Uses pip-tools to manage dependencies
 8. **AWS CloudFormation Linting** - Uses cfn-python-lint to check CloudFormation templates
 9. **Local Testing** - Runs pytest for Python tests

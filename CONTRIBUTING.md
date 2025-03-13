@@ -83,6 +83,9 @@ Before submitting changes, test them thoroughly:
 1. Ensure your changes are well-tested
 2. Update the README.md if necessary
 3. Submit a pull request to the `main` branch
-4. Wait for review and address any feedback
+4. Verify that your PR passes the automated pre-commit checks
+5. Wait for review and address any feedback
+
+A GitHub Actions workflow automatically runs pre-commit checks on all pull requests. Your PR will need to pass these checks before it can be merged.
 
 Thank you for helping improve this project!
