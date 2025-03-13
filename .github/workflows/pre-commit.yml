@@ -30,7 +30,6 @@ jobs:
           # Copy .markdownlint.yaml to the working directory for use by markdownlint
           echo "Copying .markdownlint.yaml to ensure markdownlint uses the correct configuration"
           cp .markdownlint.yaml ~/.markdownlint.yaml
-          cp .markdownlint.yaml "${GITHUB_WORKSPACE}/.markdownlint.yaml"
 
           # Install Python dependencies in user mode first
           pip install --user -r scripts/requirements.txt || {
