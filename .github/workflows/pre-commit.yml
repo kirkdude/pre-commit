@@ -20,15 +20,12 @@ jobs:
       - name: Make setup script executable
         run: chmod +x scripts/setup_run_pre-commit_linux.sh
 
-      - name: Check Line Lengths
-        run: awk '{print NR ":" length($0)}' README.md
-
       - name: Install dependencies and run pre-commit checks
         run: |
           # Install npm for markdownlint-cli
           sudo apt-get update
           sudo apt-get install -y nodejs npm
-          sudo npm install -g markdownlint-cli
+          sudo npm install -g markdownlint-cli@0.44.0
 
           # Install Python dependencies in user mode first
           pip install --user -r scripts/requirements.txt || {

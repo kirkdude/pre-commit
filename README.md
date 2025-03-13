@@ -1,6 +1,7 @@
 # Pre-commit
 
-[![Build Status](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml)
+[![Build Status](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml/badge.svg)
+](https://github.com/kirkdude/pre-commit/actions/workflows/pre-commit.yml)
 
 This repository contains pre-commit configuration that uses a curated set of
 linters and security checkers to enhance the quality and security of your
