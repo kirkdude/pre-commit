@@ -125,14 +125,27 @@ else
     echo "Warning: requirements.txt not found"
 fi
 
-# Only generate SSH key if it doesn't exist and user confirms
+# Check if we're in CI environment or if --ci flag is passed
+IS_CI=false
+for arg in "$@"; do
+    if [ "$arg" == "--ci" ]; then
+        IS_CI=true
+        break
+    fi
+done
+
+# Only generate SSH key if it doesn't exist and we're not in CI, or user confirms
 if [ ! -f ~/.ssh/id_rsa ]; then
-    echo "No SSH key found. Do you want to generate one? (y/n)"
-    read -r GENERATE_KEY
-    if [[ "$GENERATE_KEY" =~ ^[Yy]$ ]]; then
-        echo "Generating SSH key..."
-        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" || install_error "ssh key generation"
-        echo "SSH key generated at ~/.ssh/id_rsa"
+    if [ "$IS_CI" = true ]; then
+        echo "CI environment detected, skipping SSH key generation"
+    else
+        echo "No SSH key found. Do you want to generate one? (y/n)"
+        read -r GENERATE_KEY
+        if [[ "$GENERATE_KEY" =~ ^[Yy]$ ]]; then
+            echo "Generating SSH key..."
+            ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" || install_error "ssh key generation"
+            echo "SSH key generated at ~/.ssh/id_rsa"
+        fi
     fi
 else
     echo "SSH key already exists at ~/.ssh/id_rsa"
