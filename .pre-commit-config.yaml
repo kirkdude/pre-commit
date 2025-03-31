@@ -59,9 +59,12 @@ repos:
         args:
           - --branch
           - main
-          - --pattern
-          - '^Merge pull request'
         # don't commit to branch
+        always_run: true
+        # Skip this hook when running in GitHub Actions PR merges
+        # GITHUB_ACTIONS and GITHUB_HEAD_REF are set in GitHub Actions
+        # and GITHUB_HEAD_REF is only set during pull request events
+        skip: $GITHUB_ACTIONS == "true" && $GITHUB_HEAD_REF != ""
       - id: requirements-txt-fixer               # sorts entries in requirements.txt.
       - id: sort-simple-yaml                     # sorts simple yaml files which consist only of top-level keys
       - id: trailing-whitespace                  # trims trailing whitespace.
