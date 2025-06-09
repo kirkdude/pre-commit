@@ -18,7 +18,7 @@ repos:
         # supported by your project here, or alternatively use
         # pre-commit's default_language_version, see
         # https://pre-commit.com/#top_level-default_language_version
-        language_version: python3.11
+        language_version: python3.12
 
   # General Pre-commit Hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -55,15 +55,15 @@ repos:
       - id: forbid-submodules                    # forbids any submodules in the repository
       - id: mixed-line-ending                    # replaces or checks mixed line ending.
       - id: name-tests-test                      # verifies that test files are named correctly.
-      - id: no-commit-to-branch
+      - id: no-commit-to-branch                  # don't commit to main
         args:
           - --branch
           - main
         # don't commit to branch
         always_run: true
-        # Skip this hook when running in GitHub Actions PR merges
-        # GITHUB_ACTIONS and GITHUB_HEAD_REF are set in GitHub Actions
-        # and GITHUB_HEAD_REF is only set during pull request events
+        # Skip this hook when running in GitHub Actions during pull request events
+        # GITHUB_HEAD_REF is only set during pull request events and is empty for direct pushes
+        # This allows PR checks to run but still prevents direct pushes to main
         skip: $GITHUB_ACTIONS == "true" && $GITHUB_HEAD_REF != ""
       - id: requirements-txt-fixer               # sorts entries in requirements.txt.
       - id: sort-simple-yaml                     # sorts simple yaml files which consist only of top-level keys
@@ -76,7 +76,7 @@ repos:
     hooks:
       - id: bandit
         files: .py$
-        exclude_dirs: env
+        exclude: ^tests/
 
   # Python Linting
   # Checks Python code against some of the style conventions in PEP 8.
@@ -89,7 +89,7 @@ repos:
   # Terraform Linting and Validation
   # Provides various hooks to ensure Terraform files are correctly formatted, documented, and free from common errors.
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.98.0
+    rev: v1.99.3
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -118,11 +118,12 @@ repos:
     rev: 7.4.1
     hooks:
       - id: pip-compile
+        language_version: python3.12
 
   # AWS CloudFormation Linting
   # Checks AWS CloudFormation templates against AWS best practices.
   - repo: https://github.com/aws-cloudformation/cfn-python-lint
-    rev: v1.32.1
+    rev: v1.35.4
     hooks:
       - id: cfn-python-lint
         files: .*\.(json|yml|yaml)$
@@ -137,12 +138,12 @@ repos:
         entry: pytest -v
         language: system
         types: [python]
-        stages: [push]
+        stages: [pre-push]
 
   # Ansible Linting
   # Checks Ansible playbooks for practices and behavior that could potentially be improved.
   - repo: https://github.com/ansible-community/ansible-lint.git
-    rev: v25.1.3
+    rev: v25.5.0
     hooks:
       - id: ansible-lint
         name: Ansible-lint
@@ -156,14 +157,14 @@ repos:
 
   # Check Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli.git
-    rev: v0.44.0
+    rev: v0.45.0
     hooks:
       - id: markdownlint-fix
 
 
   # Check JAVA
   - repo: https://github.com/gherynos/pre-commit-java.git
-    rev: v0.6.11
+    rev: v0.6.16
     hooks:
       - id: pmd
       - id: cpd
