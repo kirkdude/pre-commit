@@ -1,5 +1,20 @@
 # Pre-commit Development Guidelines
 
+## Project Status
+<!-- PROJECT-MANAGER-STATUS:START -->
+Last Check: 2025-08-25T19:00:00Z
+Phase: stable-maintenance
+Last Activity: 2025-06-09 (77 days ago)
+Completion: 95%
+Dependencies: []
+Dependents: []
+Priority: stable
+Blockers: None
+Health: stable (active open-source project with regular updates)
+Uncommitted Changes: 0 (clean fork)
+Notes: Pre-commit hook framework fork with CI pipeline and contribution workflow established
+<!-- PROJECT-MANAGER-STATUS:END -->
+
 ## Commands
 
 - Run all checks: `pre-commit run --all-files`
