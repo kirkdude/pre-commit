@@ -225,13 +225,11 @@ create_git_tag() {
         changelog="Initial release."
     fi
 
-    tag_message="Release $tag
-
-Changelog:
-$changelog
-
-Release Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-Git Commit: $(git rev-parse HEAD)"
+    printf -v tag_message "Release %s\n\nChangelog:\n%s\n\nRelease Date: %s\nGit Commit: %s" \
+        "$tag" \
+        "$changelog" \
+        "$(date -u +'%Y-%m-%d %H:%M:%S UTC')" \
+        "$(git rev-parse HEAD)"
 
     if [[ "$FORCE" == "true" ]] && git rev-parse "$tag" >/dev/null 2>&1; then
         log_warning "Deleting existing tag: $tag"
