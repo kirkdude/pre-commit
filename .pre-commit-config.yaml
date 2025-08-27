@@ -58,10 +58,6 @@ repos:
       - id: no-commit-to-branch                  # don't commit to main
         args: [--branch, main]
         always_run: true
-        # Skip this hook when running in GitHub Actions during pull request events
-        # GITHUB_HEAD_REF is only set during pull request events and is empty for direct pushes
-        # This allows PR checks to run but still prevents direct pushes to main
-        skip: $GITHUB_ACTIONS == "true" && $GITHUB_HEAD_REF != ""
       - id: requirements-txt-fixer               # sorts entries in requirements.txt.
       - id: sort-simple-yaml                     # sorts simple yaml files which consist only of top-level keys
       - id: trailing-whitespace                  # trims trailing whitespace.
