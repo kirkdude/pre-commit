@@ -47,6 +47,7 @@ repos:
       - id: detect-aws-credentials               # detects *your* aws credentials from the aws cli credentials file.
         args: [--allow-missing-credentials]
       - id: detect-private-key                   # detects the presence of private keys.
+      - id: double-quote-string-fixer            # replaces double quoted strings with single quoted strings.
       - id: end-of-file-fixer                    # ensures that a file is either empty, or ends with one newline.
       - id: file-contents-sorter                 # sorts the lines in specified files (defaults to alphabetical).
       - id: fix-byte-order-marker                # removes utf-8 byte order marker.
@@ -181,6 +182,7 @@ repos:
     hooks:
       - id: checkmake
         args: [--config=checkmake.ini]
+        files: ^.*Makefile.*$
 
   # C/C++ Code Formatting and Linting
   - repo: https://github.com/pre-commit/mirrors-clang-format
@@ -215,26 +217,19 @@ repos:
     hooks:
       - id: shellcheck
 
-  # Check Make
-  - repo: https://github.com/mrtazz/checkmake.git
-    rev: 0.2.2
-    hooks:
-      - id: checkmake
-        files: ^.*Makefile.*$
-
   # Bison/Flex Syntax Validation
   - repo: local
     hooks:
       - id: bison-syntax-check
         name: Bison grammar syntax check
-        entry: bash -c 'export PATH="/usr/local/opt/bison/bin:$PATH" && for file in "$@"; do bison --warnings=all -Werror "$file" -o /dev/null; done'
+        entry: bash -c 'for file in "$@"; do bison --warnings=all -Werror "$file" -o /dev/null; done'
         language: system
         files: '\.y$'
         pass_filenames: true
 
       - id: flex-syntax-check
         name: Flex lexer syntax check
-        entry: bash -c 'export PATH="/usr/local/opt/flex/bin:$PATH" && for file in "$@"; do flex -o /dev/null "$file"; done'
+        entry: bash -c 'for file in "$@"; do flex -o /dev/null "$file"; done'
         language: system
         files: '\.l$'
         pass_filenames: true
