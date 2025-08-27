@@ -132,24 +132,10 @@ check_tag_exists() {
     return 0
 }
 
-# Get current version from Git
-get_current_version() {
-    local current_tag
-    current_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
-
-    if [[ "$current_tag" == "none" ]]; then
-        echo "No previous releases"
-    else
-        echo "$current_tag"
-    fi
-}
-
 # Compare versions to ensure we're moving forward
 validate_version_progression() {
     local new_version="$1"
-    local current_tag
-
-    current_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+    local current_tag="$2"
 
     if [[ -z "$current_tag" ]]; then
         log_info "This will be the first release"
@@ -213,16 +199,13 @@ compare_semantic_versions() {
     fi
 
     # Major and minor versions are equal, compare patch version
-    if ((v1_patch > v2_patch)); then
-        return 0
-    else
-        return 1
-    fi
+    ((v1_patch > v2_patch))
 }
 
 # Create the Git tag
 create_git_tag() {
     local version="$1"
+    local previous_tag="$2"
     local tag="v$version"
 
     if [[ "$DRY_RUN" == "true" ]]; then
@@ -235,9 +218,6 @@ create_git_tag() {
     # Create annotated tag with release information
     local tag_message
     local changelog
-    local previous_tag
-
-    previous_tag=$(git describe --tags --abbrev=0 2>/dev/null)
 
     if [[ -n "$previous_tag" ]]; then
         changelog=$(git log --pretty=format:'- %s' "$previous_tag"..HEAD)
@@ -469,12 +449,21 @@ main() {
     check_git_repo || exit 1
     check_clean_working_dir || exit 1
     check_tag_exists "v$VERSION" || exit 1
-    validate_version_progression "$VERSION" || exit 1
+
+    # Get current tag once
+    local current_tag
+    current_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+    validate_version_progression "$VERSION" "$current_tag" || exit 1
 
     # Show current state
-    local current_version
-    current_version=$(get_current_version)
-    log_info "Current version: $current_version"
+    local current_version_display
+    if [[ -z "$current_tag" ]]; then
+        current_version_display="No previous releases"
+    else
+        current_version_display="$current_tag"
+    fi
+    log_info "Current version: $current_version_display"
     log_info "New version: v$VERSION"
 
     if [[ "$DRY_RUN" == "true" ]]; then
@@ -489,7 +478,7 @@ main() {
     local zip_file="$RELEASES_DIR/${archive_prefix}.zip"
 
     # Create the release
-    create_git_tag "$VERSION" || exit 1
+    create_git_tag "$VERSION" "$current_tag" || exit 1
     create_source_archives "$VERSION" "$archive_prefix" "$tar_file" "$zip_file" || exit 1
     push_to_remote "$VERSION" || exit 1
 
