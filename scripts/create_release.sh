@@ -20,19 +20,19 @@ NC='\033[0m' # No Color
 
 # Helper functions
 log_info() {
-    echo -e "${CYAN}$1${NC}"
+    printf '%b\n' "${CYAN}$1${NC}"
 }
 
 log_success() {
-    echo -e "${GREEN}$1${NC}"
+    printf '%b\n' "${GREEN}$1${NC}"
 }
 
 log_warning() {
-    echo -e "${YELLOW}$1${NC}" >&2
+    printf '%b\n' "${YELLOW}$1${NC}" >&2
 }
 
 log_error() {
-    echo -e "${RED}$1${NC}" >&2
+    printf '%b\n' "${RED}$1${NC}" >&2
 }
 
 # Show usage
