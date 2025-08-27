@@ -330,21 +330,28 @@ create_source_archives() {
 push_to_remote() {
     local version="$1"
     local tag="v$version"
+    local push_opts=()
+    local force_msg=""
+
+    if [[ "$FORCE" == "true" ]]; then
+        push_opts+=("--force")
+        force_msg=" (with --force)"
+    fi
 
     if [[ "$PUSH" != "true" ]]; then
         log_info "To push this release to remote repository:"
-        log_info "  git push ${GIT_REMOTE:-origin} $tag"
+        log_info "  git push ${push_opts[*]} ${GIT_REMOTE:-origin} $tag"
         return 0
     fi
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "DRY RUN: Would push tag to remote: $tag"
+        log_info "DRY RUN: Would push tag to remote: git push ${push_opts[*]} ${GIT_REMOTE:-origin} $tag"
         return 0
     fi
 
-    log_info "Pushing tag to remote repository..."
+    log_info "Pushing tag to remote repository${force_msg}..."
 
-    if git push "${GIT_REMOTE:-origin}" "$tag"; then
+    if git push "${push_opts[@]}" "${GIT_REMOTE:-origin}" "$tag"; then
         log_success "✓ Pushed tag to remote: $tag"
     else
         log_error "Failed to push tag to remote"
