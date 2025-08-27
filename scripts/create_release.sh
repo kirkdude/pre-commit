@@ -318,7 +318,7 @@ push_to_remote() {
 
     if [[ "$PUSH" != "true" ]]; then
         log_info "To push this release to remote repository:"
-        log_info "  git push ${push_opts[@]} ${GIT_REMOTE:-origin} $tag"
+        log_info "  git push ${push_opts[*]} ${GIT_REMOTE:-origin} $tag"
         return 0
     fi
 
