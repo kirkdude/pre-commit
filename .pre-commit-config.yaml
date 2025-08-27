@@ -56,9 +56,7 @@ repos:
       - id: mixed-line-ending                    # replaces or checks mixed line ending.
       - id: name-tests-test                      # verifies that test files are named correctly.
       - id: no-commit-to-branch                  # don't commit to main
-        args:
-          - --branch
-          - main
+        args: [--branch, main]
         always_run: true
         # Skip this hook when running in GitHub Actions during pull request events
         # GITHUB_HEAD_REF is only set during pull request events and is empty for direct pushes
