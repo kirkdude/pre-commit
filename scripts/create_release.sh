@@ -484,6 +484,8 @@ main() {
     show_release_summary "$VERSION" "$tar_file" "$zip_file"
 }
 
-# Parse arguments and run
-parse_arguments "$@"
-main
+# Run script if executed directly
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    parse_arguments "$@"
+    main
+fi
