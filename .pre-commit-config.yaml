@@ -1,4 +1,6 @@
 ---
+default_language_version:
+  python: python3.12
 repos:
   # Dockerfile Linting
   # Lints Dockerfiles to ensure they adhere to best practices.
@@ -18,15 +20,14 @@ repos:
         # supported by your project here, or alternatively use
         # pre-commit's default_language_version, see
         # https://pre-commit.com/#top_level-default_language_version
-        language_version: python3.11
+        language_version: python3.12
 
   # General Pre-commit Hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files              # prevents giant files from being committed.
       - id: check-ast                            # simply checks whether the files parse as valid python.
-      - id: check-byte-order-marker              # forbids files which have a utf-8 byte-order marker.
       - id: check-builtin-literals               # requires literal syntax when initializing empty or zero python builtin types.
       - id: check-case-conflict                  # checks for files that would conflict in case-insensitive filesystems.
       - id: check-docstring-first                # checks a common error of defining a docstring after code.
@@ -50,20 +51,18 @@ repos:
       - id: end-of-file-fixer                    # ensures that a file is either empty, or ends with one newline.
       - id: file-contents-sorter                 # sorts the lines in specified files (defaults to alphabetical).
       - id: fix-byte-order-marker                # removes utf-8 byte order marker.
-      - id: fix-encoding-pragma                  # adds # -*- coding: utf-8 -*- to the top of python files.
       - id: forbid-new-submodules                # prevents addition of new git submodules.
       - id: forbid-submodules                    # forbids any submodules in the repository
       - id: mixed-line-ending                    # replaces or checks mixed line ending.
       - id: name-tests-test                      # verifies that test files are named correctly.
-      - id: no-commit-to-branch
+      - id: no-commit-to-branch                  # don't commit to main
         args:
           - --branch
           - main
-        # don't commit to branch
         always_run: true
-        # Skip this hook when running in GitHub Actions PR merges
-        # GITHUB_ACTIONS and GITHUB_HEAD_REF are set in GitHub Actions
-        # and GITHUB_HEAD_REF is only set during pull request events
+        # Skip this hook when running in GitHub Actions during pull request events
+        # GITHUB_HEAD_REF is only set during pull request events and is empty for direct pushes
+        # This allows PR checks to run but still prevents direct pushes to main
         skip: $GITHUB_ACTIONS == "true" && $GITHUB_HEAD_REF != ""
       - id: requirements-txt-fixer               # sorts entries in requirements.txt.
       - id: sort-simple-yaml                     # sorts simple yaml files which consist only of top-level keys
@@ -72,16 +71,16 @@ repos:
   # Python Security Linting
   # Finds common security issues in Python code.
   - repo: https://github.com/PyCQA/bandit.git
-    rev: 1.8.3
+    rev: 1.8.6
     hooks:
       - id: bandit
         files: .py$
-        exclude_dirs: env
+        exclude: ^tests/
 
   # Python Linting
   # Checks Python code against some of the style conventions in PEP 8.
   - repo: https://github.com/pycqa/flake8
-    rev: 7.2.0
+    rev: 7.3.0
     hooks:
       - id: flake8
         args: [--max-line-length=120]
@@ -89,7 +88,7 @@ repos:
   # Terraform Linting and Validation
   # Provides various hooks to ensure Terraform files are correctly formatted, documented, and free from common errors.
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.98.0
+    rev: v1.100.0
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -115,14 +114,15 @@ repos:
   # Python Dependency Management
   # Helps in compiling and synchronizing Python dependencies.
   - repo: https://github.com/jazzband/pip-tools
-    rev: 7.4.1
+    rev: v7.5.0
     hooks:
       - id: pip-compile
+        language_version: python3.12
 
   # AWS CloudFormation Linting
   # Checks AWS CloudFormation templates against AWS best practices.
   - repo: https://github.com/aws-cloudformation/cfn-python-lint
-    rev: v1.32.1
+    rev: v1.39.0
     hooks:
       - id: cfn-python-lint
         files: .*\.(json|yml|yaml)$
@@ -132,17 +132,17 @@ repos:
   # Runs tests using pytest.
   - repo: local
     hooks:
-      - id: tests
-        name: run tests
+      - id: pytest
+        name: run pytests
         entry: pytest -v
         language: system
         types: [python]
-        stages: [push]
+        stages: [pre-push]
 
   # Ansible Linting
   # Checks Ansible playbooks for practices and behavior that could potentially be improved.
   - repo: https://github.com/ansible-community/ansible-lint.git
-    rev: v25.1.3
+    rev: v25.8.2
     hooks:
       - id: ansible-lint
         name: Ansible-lint
@@ -156,14 +156,14 @@ repos:
 
   # Check Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli.git
-    rev: v0.44.0
+    rev: v0.37.0
     hooks:
       - id: markdownlint-fix
 
 
   # Check JAVA
   - repo: https://github.com/gherynos/pre-commit-java.git
-    rev: v0.6.11
+    rev: v0.6.21
     hooks:
       - id: pmd
       - id: cpd
@@ -182,3 +182,54 @@ repos:
     hooks:
       - id: checkmake
         args: [--config=checkmake.ini]
+        files: ^.*Makefile.*$
+
+  # C/C++ Code Formatting and Linting
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v20.1.8
+    hooks:
+      - id: clang-format
+        types: [c, c++]
+        args: [-i]  # in-place formatting
+
+  # C/C++ Static Analysis
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: cppcheck
+        args: [
+          "--enable=warning,style,performance,portability",
+          "--suppress=missingIncludeSystem",
+          "--suppress=unusedFunction",
+          "--suppress=unmatchedSuppression",
+          "--error-exitcode=1",
+          "-q"
+        ]
+      - id: cpplint
+        args: [
+          "--filter=-whitespace/braces,-whitespace/indent,-build/include_subdir",
+          "--linelength=120"
+        ]
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+
+  # Bison/Flex Syntax Validation
+  - repo: local
+    hooks:
+      - id: bison-syntax-check
+        name: Bison grammar syntax check
+        entry: bash -c 'for file in "$@"; do bison --warnings=all -Werror "$file" -o /dev/null; done'
+        language: system
+        files: '\.y$'
+        pass_filenames: true
+
+      - id: flex-syntax-check
+        name: Flex lexer syntax check
+        entry: bash -c 'for file in "$@"; do flex -o /dev/null "$file"; done'
+        language: system
+        files: '\.l$'
+        pass_filenames: true
