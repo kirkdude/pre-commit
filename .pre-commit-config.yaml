@@ -156,7 +156,7 @@ repos:
 
   # Check Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli.git
-    rev: v0.45.0
+    rev: v0.37.0
     hooks:
       - id: markdownlint-fix
 
