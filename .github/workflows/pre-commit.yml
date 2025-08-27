@@ -48,5 +48,5 @@ jobs:
           # Run with sudo as the script needs root privileges (but skip Python package installation)
           sudo DEBIAN_FRONTEND=noninteractive ./scripts/setup_run_pre-commit_linux.sh
 
-          # Run pre-commit on all files (the script runs it, but let's be explicit)
-          pre-commit run --all-files
+          # Run pre-commit on all files, skipping no-commit-to-branch in CI
+          SKIP=no-commit-to-branch pre-commit run --all-files
