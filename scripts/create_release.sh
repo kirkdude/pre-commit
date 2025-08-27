@@ -20,19 +20,19 @@ NC='\033[0m' # No Color
 
 # Helper functions
 log_info() {
-    printf '%b\n' "${CYAN}$1${NC}"
+    printf "${CYAN}%s${NC}\n" "$1"
 }
 
 log_success() {
-    printf '%b\n' "${GREEN}$1${NC}"
+    printf "${GREEN}%s${NC}\n" "$1"
 }
 
 log_warning() {
-    printf '%b\n' "${YELLOW}$1${NC}" >&2
+    printf "${YELLOW}%s${NC}\n" "$1" >&2
 }
 
 log_error() {
-    printf '%b\n' "${RED}$1${NC}" >&2
+    printf "${RED}%s${NC}\n" "$1" >&2
 }
 
 # Show usage
