@@ -15,6 +15,7 @@ fi
 
 # Packages to install
 PACKAGES=(
+    "trufflehog"
     "checkmake"
     "pylint"
     "ansible-lint"

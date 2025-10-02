@@ -62,6 +62,16 @@ repos:
       - id: sort-simple-yaml                     # sorts simple yaml files which consist only of top-level keys
       - id: trailing-whitespace                  # trims trailing whitespace.
 
+  # Comprehensive Secrets Detection with TruffleHog
+  # TruffleHog provides advanced secrets detection with verification capabilities
+  # across all supported languages (Python, Java, C/C++, Shell, Terraform, etc.)
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.90.8
+    hooks:
+      - id: trufflehog
+        name: TruffleHog Secrets Scanner
+        description: Scan for secrets using TruffleHog's advanced detection and verification
+
   # Python Security Linting
   # Finds common security issues in Python code.
   - repo: https://github.com/PyCQA/bandit.git
