@@ -71,6 +71,8 @@ repos:
       - id: trufflehog
         name: TruffleHog Secrets Scanner
         description: Scan for secrets using TruffleHog's advanced detection and verification
+        require_serial: true
+        types: [text]
 
   # Python Security Linting
   # Finds common security issues in Python code.
