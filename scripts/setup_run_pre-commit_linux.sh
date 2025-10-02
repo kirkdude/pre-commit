@@ -91,6 +91,14 @@ if [ -x "$(command -v apt)" ]; then
     curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh || \
       install_error "infracost"
 
+    echo "Installing TruffleHog..."
+    if ! command -v trufflehog &> /dev/null; then
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin || \
+          install_error "trufflehog"
+    else
+        echo "TruffleHog already installed"
+    fi
+
 elif [ -x "$(command -v yum)" ]; then
     echo "RPM-based system detected"
 

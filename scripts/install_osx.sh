@@ -15,22 +15,23 @@ fi
 
 # Packages to install
 PACKAGES=(
-    "checkmake"
-    "pylint"
-    "ansible-lint"
     "ansible"
-    "pre-commit"
+    "ansible-lint"
     "black"
-    "terraform-docs"
-    "tflint"
+    "checkmake"
     "coreutils"
     "gawk"
-    "tfsec"
     "hadolint"
     "jq"
+    "markdownlint-cli"
+    "pre-commit"
+    "pylint"
+    "terraform-docs"
     "terrascan"
+    "tflint"
+    "tfsec"
     "trivy"
-    "markdownlint-cli"  # Added for markdown linting
+    "trufflehog"
 )
 
 # Function for error handling
