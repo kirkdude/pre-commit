@@ -324,26 +324,26 @@ Track pre-commit performance over time:
 
 ```yaml
 # .github/workflows/pre-commit.yml
-- name: Run pre-commit with timing
+- name: Run pre-commit and check performance
   run: |
-    time pre-commit run --all-files --show-diff-on-failure > pre-commit.log 2>&1
+    START_TIME=$(date +%s)
+    set +e
+    pre-commit run --all-files --show-diff-on-failure
+    PRE_COMMIT_EXIT_CODE=$?
+    set -e
+    END_TIME=$(date +%s)
+    ELAPSED_SECONDS=$((END_TIME - START_TIME))
 
-- name: Check performance budget
-  run: |
-    # Fail if pre-commit takes > 60 seconds (CI is slower than local)
-    TIME_STR=$(grep 'real' pre-commit.log | awk '{print $2}')
-    # Robustly parse time format like "0m45.123s" or "45.123s"
-    if [[ "$TIME_STR" == *m* ]]; then
-        MINUTES=$(echo "$TIME_STR" | cut -d'm' -f1)
-        SECONDS=$(echo "$TIME_STR" | cut -d'm' -f2 | sed 's/s//')
+    # Check performance budget
+    if (( ELAPSED_SECONDS > 60 )); then
+      echo "::warning::Pre-commit exceeded performance budget: ${ELAPSED_SECONDS}s > 60s"
     else
-        MINUTES=0
-        SECONDS=$(echo "$TIME_STR" | sed 's/s//')
+      echo "Pre-commit finished in ${ELAPSED_SECONDS}s (budget: 60s)"
     fi
-    TOTAL_SECONDS=$(echo "$MINUTES * 60 + $SECONDS" | bc)
-    if (( $(echo "$TOTAL_SECONDS > 60" | bc -l) )); then
-      echo "Pre-commit exceeded performance budget: ${TOTAL_SECONDS}s > 60s"
-      exit 1
+
+    # Fail the step if pre-commit itself failed
+    if [ $PRE_COMMIT_EXIT_CODE -ne 0 ]; then
+      exit $PRE_COMMIT_EXIT_CODE
     fi
 ```
 
