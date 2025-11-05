@@ -20,15 +20,16 @@ curl -O https://raw.githubusercontent.com/kirkdude/pre-commit/main/.pre-commit-c
 # 2. Install pre-commit framework
 pip install pre-commit
 
-# 3. Install hooks (with bypass enforcement)
+# 3. Install hooks
 pre-commit install
-# Then add bypass detection to .git/hooks/pre-commit (see docs/bypass-enforcement.md)
 
 # 4. Test it
 pre-commit run --all-files
 ```
 
 **Result:** All applicable hooks run automatically on every commit. Language-specific hooks auto-skip if not relevant to your project.
+
+**Note:** Local hooks provide fast feedback but can be bypassed with `--no-verify`. Real enforcement happens in CI/CD (see below).
 
 ## Installation
 
@@ -84,31 +85,34 @@ regularly updated with the latest hooks and best practices.
 
 ## Key Features
 
-### 1. Bypass Enforcement (NEW - 2025-10-06)
+### 1. CI Enforcement (GitHub Actions)
 
-**Block `git commit --no-verify`** to prevent developers from bypassing quality checks:
+**Automatic quality enforcement via GitHub Actions** - no bypasses possible:
 
-- Technical enforcement via process inspection
-- Audit trail logged to `.git/bypass-attempts.log`
-- Cross-platform: macOS, Linux, Windows Git Bash
-- Zero false positives, minimal overhead
+- ✅ Runs `pre-commit run --all-files` on every PR
+- ✅ Cannot be bypassed with `--no-verify` (runs on GitHub's servers)
+- ✅ Enforced via branch protection rules
+- ✅ Blocks merging until all checks pass
+- ✅ Works for all contributors automatically
 
-**Installation:**
+**Implementation:** See [.github/workflows/pre-commit.yml](./.github/workflows/pre-commit.yml)
 
-```bash
-./scripts/install-with-bypass-enforcement.sh
-```
+**Why local hooks can't enforce:**
 
-**Why this matters:**
+- `git commit --no-verify` skips ALL hooks completely
+- Hook-based enforcement is fundamentally impossible
+- CI enforcement is the only reliable solution
 
-- Prevents skipping security scans (bandit, trufflehog, safety)
-- Enforces code formatting and linting standards
-- Maintains test coverage requirements
-- Reduces technical debt and security vulnerabilities
+**Setup branch protection:**
+
+1. Settings → Branches → Branch protection rules
+2. Require status checks to pass before merging
+3. Select "Pre-commit Checks" workflow
+4. Apply to administrators too
 
 **Documentation:** [docs/bypass-enforcement.md](./docs/bypass-enforcement.md)
 
-### 2. Performance Optimizations (NEW - 2025-10-06)
+### 2. Performance Optimizations
 
 Keep pre-commit hooks **under 45 seconds** without sacrificing quality:
 
@@ -198,14 +202,6 @@ This pre-commit configuration includes several categories of hooks:
      exclude: '.*'  # Disabled: ticket PROJECT-123
    ```
 
-### Bypass Detection Blocking Legitimate Commits
-
-If bypass enforcement is incorrectly blocking your commit:
-
-1. **Check if you're actually using `--no-verify`**: `ps -o args= $PPID`
-2. **Use SKIP instead**: `SKIP=hook-id git commit -m "message"`
-3. **Report false positive**: Open issue with details
-
 ### Pre-commit Not Running
 
 ```bash
@@ -235,7 +231,7 @@ pre-commit run --all-files --show-diff-on-failure
 
 ## Documentation
 
-- [Bypass Enforcement Guide](./docs/bypass-enforcement.md) - How bypass blocking works
+- [Quality Enforcement Guide](./docs/bypass-enforcement.md) - Why local enforcement fails and how CI solves it
 - [Performance Optimization](./docs/performance-optimization.md) - Keep hooks under 45 seconds
 - [Official pre-commit docs](https://pre-commit.com/) - Framework documentation
 

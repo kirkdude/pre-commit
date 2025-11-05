@@ -331,8 +331,13 @@ Track pre-commit performance over time:
 - name: Check performance budget
   run: |
     # Fail if pre-commit takes > 60 seconds (CI is slower than local)
-    if [ "$(grep 'real' pre-commit.log | awk '{print $2}')" > "60s" ]; then
-      echo "Pre-commit exceeded performance budget"
+    TIME_STR=$(grep 'real' pre-commit.log | awk '{print $2}')
+    # Parse time format "0m45.123s" to seconds
+    MINUTES=$(echo "$TIME_STR" | sed 's/m.*//')
+    SECONDS=$(echo "$TIME_STR" | sed 's/.*m//;s/s//')
+    TOTAL_SECONDS=$(echo "$MINUTES * 60 + $SECONDS" | bc)
+    if (( $(echo "$TOTAL_SECONDS > 60" | bc -l) )); then
+      echo "Pre-commit exceeded performance budget: ${TOTAL_SECONDS}s > 60s"
       exit 1
     fi
 ```
