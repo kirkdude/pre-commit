@@ -186,8 +186,8 @@ time pre-commit run python-safety-dependencies-check --all-files
 ### Profiling Slow Hooks
 
 ```bash
-# Run with color and timing
-PYTHONPROFILE=1 pre-commit run --all-files --color=always | grep -E "Passed|Failed|Skipped" | sort -k2 -n
+# Run with verbose timing to see execution time for each hook
+pre-commit run --all-files --verbose
 ```
 
 ### Setting Performance Budget
@@ -235,7 +235,7 @@ Add to your project documentation:
 
 ```yaml
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.17.1
+  rev: v1.10.0
   hooks:
     - id: mypy
       args: [--incremental, --cache-dir=.mypy_cache]  # Use incremental mode
@@ -332,9 +332,14 @@ Track pre-commit performance over time:
   run: |
     # Fail if pre-commit takes > 60 seconds (CI is slower than local)
     TIME_STR=$(grep 'real' pre-commit.log | awk '{print $2}')
-    # Parse time format "0m45.123s" to seconds
-    MINUTES=$(echo "$TIME_STR" | sed 's/m.*//')
-    SECONDS=$(echo "$TIME_STR" | sed 's/.*m//;s/s//')
+    # Robustly parse time format like "0m45.123s" or "45.123s"
+    if [[ "$TIME_STR" == *m* ]]; then
+        MINUTES=$(echo "$TIME_STR" | cut -d'm' -f1)
+        SECONDS=$(echo "$TIME_STR" | cut -d'm' -f2 | sed 's/s//')
+    else
+        MINUTES=0
+        SECONDS=$(echo "$TIME_STR" | sed 's/s//')
+    fi
     TOTAL_SECONDS=$(echo "$MINUTES * 60 + $SECONDS" | bc)
     if (( $(echo "$TOTAL_SECONDS > 60" | bc -l) )); then
       echo "Pre-commit exceeded performance budget: ${TOTAL_SECONDS}s > 60s"

@@ -90,11 +90,21 @@ fi
 **❌ Wrapper scripts:**
 
 ```bash
-# Git commit wrapper that removes --no-verify
-git commit "$@" | sed 's/--no-verify//g'
+# Git commit wrapper that filters out --no-verify
+function git() {
+  if [[ "$1" == "commit" ]]; then
+    local args=()
+    for arg in "${@:2}"; do
+      [[ "$arg" != "--no-verify" ]] && args+=("$arg")
+    done
+    command git commit "${args[@]}"
+  else
+    command git "$@"
+  fi
+}
 ```
 
-**Problem:** Developers can still run `git` directly, and forced wrappers break IDE integrations.
+**Problem:** Developers can still run `/usr/bin/git` directly, and forced wrappers break IDE integrations.
 
 **❌ Git config hooks.enforceVerify:**
 
