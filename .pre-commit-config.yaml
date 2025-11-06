@@ -1,4 +1,21 @@
 ---
+# ============================================================================
+# PERFORMANCE OPTIMIZATIONS
+# ============================================================================
+# These settings optimize pre-commit performance without sacrificing quality.
+# Target: < 45 seconds for typical commits
+# See docs/performance-optimization.md for details
+
+# Show all issues at once for comprehensive feedback (slower on bad commits, but learn all issues)
+# Set to true for faster feedback (stops on first failure)
+fail_fast: false
+
+# Enable newer performance features and optimizations in pre-commit framework
+minimum_pre_commit_version: '2.20.0'
+
+# ============================================================================
+# LANGUAGE VERSIONS
+# ============================================================================
 default_language_version:
   python: python3.12
 repos:
@@ -47,7 +64,6 @@ repos:
       - id: detect-aws-credentials               # detects *your* aws credentials from the aws cli credentials file.
         args: [--allow-missing-credentials]
       - id: detect-private-key                   # detects the presence of private keys.
-      - id: double-quote-string-fixer            # replaces double quoted strings with single quoted strings.
       - id: end-of-file-fixer                    # ensures that a file is either empty, or ends with one newline.
       - id: file-contents-sorter                 # sorts the lines in specified files (defaults to alphabetical).
       - id: fix-byte-order-marker                # removes utf-8 byte order marker.

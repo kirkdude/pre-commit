@@ -1,3 +1,5 @@
 [flake8]
 max-line-length = 120
 exclude = .git,__pycache__,debug
+# E203: Black formatter adds whitespace before ':' in slices - conflict with Black
+extend-ignore = E203
